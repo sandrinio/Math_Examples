@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Example Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f7fafc;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .heading {
+            font-size: 2.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1e293b;
+        }
+        .sub-heading {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #334155;
+        }
+        .problem-container {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0.5rem;
+            gap: 0.5rem;
+        }
+        .problem {
+            font-size: 1.25rem;
+            color: #4b5563;
+        }
+        input[type="number"] {
+            width: 100px;
+            padding: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            box-shadow: inset 0 1px 3px 0 rgba(0, 0, 0, 0.06);
+        }
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        .feedback {
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+        .correct {
+            color: #16a34a;
+        }
+        .incorrect {
+            color: #dc2626;
+        }
+        .submit-button {
+            padding: 0.75rem 1.5rem;
+            background-color: #3b82f6;
+            color: white;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 1rem;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .submit-button:hover {
+            background-color: #2563eb;
+        }
+        .submit-button:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 2rem;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 0.75rem;
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            text-align: center;
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+        .modal-button-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .modal-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.375rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .modal-button.yes {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .modal-button.yes:hover {
+            background-color: #2563eb;
+        }
+        .modal-button.no {
+            background-color: #e5e7eb;
+            color: #374151;
+        }
+        .modal-button.no:hover {
+            background-color: #d1d5db;
+        }
+        .close-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            color: #6b7280;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.2s ease;
+            border: none;
+            background: none;
+            padding: 0;
+            line-height: 1;
+        }
+        .close-button:hover {
+            color: #1f2937;
+        }
+        #feedback-container {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: #f0fdf4;
+            border-radius: 0.75rem;
+            border: 1px solid #dcfce7;
+            text-align: left;
+        }
+        #feedback-container h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #15803d;
+        }
+        #feedback-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        #feedback-list li {
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
+            color: #374151;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+            text-align: left; /* Align section titles to the left */
+        }
+        #additions-container {
+            float: left; /* Float the addition container to the left */
+            width: 48%; /* Take up about half the width */
+            margin-right: 2%; /* Add a little margin to separate the sections */
+            text-align: left; /* Align content within the container to the left */
+        }
+        #subtractions-container {
+            float: left; /* Float the subtraction container to the left */
+            width: 48%; /* Take up about half the width */
+            text-align: left; /* Align content within the container to the left */
+        }
+        #math-form {
+            overflow: auto; /* Clear the floats so the form doesn't collapse */
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container">
+        <h1 class="heading">Math Examples</h1>
+        <p class="sub-heading">Solve the following problems:</p>
+
+        <form id="math-form">
+            <div id="additions-container">
+                <h2 class="section-title">Addition</h2>
+            </div>
+            <div id="subtractions-container">
+                <h2 class="section-title">Subtraction</h2>
+            </div>
+            <button type="submit" class="submit-button" id="submit-button">Submit</button>
+        </form>
+
+        <div id="feedback-container" style="display: none;">
+            <h3>Results</h3>
+            <ul id="feedback-list">
+                </ul>
+        </div>
+
+        <div id="confirmation-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button" id="close-modal-button">&times;</span>
+                <h2 class="modal-title">Are you sure?</h2>
+                <p>Did you check your answers?</p>
+                <div class="modal-button-container">
+                    <button id="yes-button" class="modal-button yes">Yes</button>
+                    <button id="no-button" class="modal-button no">No</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const problemsContainer = document.getElementById('problems-container');
+        const submitButton = document.getElementById('submit-button');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const yesButton = document.getElementById('yes-button');
+        const noButton = document.getElementById('no-button');
+        const closeModalButton = document.getElementById('close-modal-button');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackList = document.getElementById('feedback-list');
+        const mathForm = document.getElementById('math-form');
+        const additionsContainer = document.getElementById('additions-container');
+        const subtractionsContainer = document.getElementById('subtractions-container');
+
+
+        let problems = [];
+        let answers = [];
+        const numberOfProblems = 20;
+        const maxNumber = 50;
+        const minNumber = 7;
+
+        function generateAdditionProblem() {
+            let num1, num2;
+            do {
+                num1 = Math.floor(Math.random() * (maxNumber - minNumber) + minNumber + 1);
+                num2 = Math.floor(Math.random() * (maxNumber - num1 - minNumber) + minNumber + 1);
+            } while (num1 <= minNumber || num2 <= minNumber);
+            const problem = `${num1} + ${num2} = `;
+            const answer = num1 + num2;
+            return { problem, answer };
+        }
+
+        function generateSubtractionProblem() {
+            let num1, num2;
+            do {
+                num1 = Math.floor(Math.random() * (maxNumber - minNumber) + minNumber + 1);
+                num2 = Math.floor(Math.random() * (num1 - minNumber) + minNumber + 1);
+            } while (num1 <= minNumber || num2 <= minNumber);
+            const problem = `${num1} - ${num2} = `;
+            const answer = num1 - num2;
+            return { problem, answer };
+        }
+
+        function generateProblems() {
+            problems = [];
+            for (let i = 0; i < numberOfProblems / 2; i++) {
+                problems.push(generateAdditionProblem());
+            }
+            for (let i = 0; i < numberOfProblems / 2; i++) {
+                problems.push(generateSubtractionProblem());
+            }
+            // Shuffle the problems array to mix addition and subtraction
+            for (let i = problems.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [problems[i], problems[j]] = [problems[j], problems[i]];
+            }
+        }
+
+        function displayProblems() {
+            additionsContainer.innerHTML = '<h2 class="section-title">Addition</h2>';
+            subtractionsContainer.innerHTML = '<h2 class="section-title">Subtraction</h2>';
+            answers = [];
+            problems.forEach((problem, index) => {
+                const problemDiv = document.createElement('div');
+                problemDiv.className = 'problem-container';
+                problemDiv.innerHTML = `<span class="problem">${problem.problem}</span>
+                                       <input type="number" id="answer-${index}" placeholder="?">`;
+                if (problem.problem.includes('+')) {
+                    additionsContainer.appendChild(problemDiv);
+                } else {
+                    subtractionsContainer.appendChild(problemDiv);
+                }
+            });
+        }
+
+        function getAnswers() {
+            answers = [];
+            problems.forEach((_, index) => {
+                const answerInput = document.getElementById(`answer-${index}`);
+                const userAnswer = parseInt(answerInput.value);
+                answers.push(userAnswer);
+            });
+        }
+
+        function showModal() {
+            confirmationModal.style.display = 'flex';
+        }
+
+        function hideModal() {
+            confirmationModal.style.display = 'none';
+        }
+
+        function markAnswers() {
+            getAnswers();
+            feedbackList.innerHTML = '';
+            let correctCount = 0;
+            problems.forEach((problem, index) => {
+                const userAnswer = answers[index];
+                const correctAnswer = problem.answer;
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `${problem.problem} <b>${userAnswer}</b>  `;
+                if (userAnswer === correctAnswer) {
+                    listItem.classList.add('correct');
+                    listItem.innerHTML += '✅';
+                    correctCount++;
+                } else {
+                    listItem.classList.add('incorrect');
+                    listItem.innerHTML += `❌`;
+                }
+                feedbackList.appendChild(listItem);
+            });
+
+            const percentage = (correctCount / numberOfProblems) * 100;
+            const finalFeedbackItem = document.createElement('li');
+            finalFeedbackItem.textContent = `You got ${correctCount} out of ${numberOfProblems} correct (${percentage.toFixed(0)}%)`;
+            finalFeedbackItem.style.fontWeight = 'bold';
+            feedbackList.appendChild(finalFeedbackItem);
+            feedbackContainer.style.display = 'block';
+        }
+
+        generateProblems();
+        displayProblems();
+
+        submitButton.addEventListener('click', (event) => {
+            event.preventDefault();
+            showModal();
+        });
+
+        closeModalButton.addEventListener('click', hideModal);
+        noButton.addEventListener('click', hideModal);
+
+        yesButton.addEventListener('click', () => {
+            markAnswers();
+            hideModal();
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === confirmationModal) {
+                hideModal();
+            }
+        });
+    </script>
+</body>
+</html>
