@@ -243,10 +243,17 @@
             }, '');
           },
           renderSubmissionHistory() {
-            let history = JSON.parse(this.getCookie('mathTestHistory') || '[]');
-            // Sort descending by date
-            history.sort((a,b) => new Date(b.date) - new Date(a.date));
-            this.history = history;
+            try {
+              const raw = this.getCookie('mathTestHistory');
+              console.log("Raw cookie:", raw);
+              const history = JSON.parse(raw || '[]');
+              history.sort((a, b) => new Date(b.date) - new Date(a.date));
+              this.history = history;
+              console.log("Parsed history:", this.history);
+            } catch (err) {
+              console.error("Error parsing cookie:", err);
+              this.history = [];
+            }
           },
           showHistoryItem(index) {
             if(index >= 0 && index < this.history.length) {
