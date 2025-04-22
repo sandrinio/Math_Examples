@@ -215,6 +215,28 @@
             this.saveResultsToCookies();
             this.renderSubmissionHistory();
           },
+/*************  ✨ Windsurf Command ⭐  *************/
+          /**
+           * Save the results of this test to a cookie, so they can be displayed
+           * in the submission history.
+           *
+           * The cookie is named "mathTestHistory", and it stores the results of
+           * the last 10 tests. Each result is an object with the following
+           * properties:
+           *   - id: a unique identifier for this result, in the format
+           *     "test-<timestamp>"
+           *   - problems: a copy of the problems that were shown to the user
+           *   - answers: a copy of the user's answers
+           *   - results: a copy of the results of the test, which is an array of
+           *     objects with the following properties:
+           *       - problem: the text of the problem
+           *       - userAnswer: the user's answer
+           *       - correctAnswer: the correct answer
+           *       - isCorrect: whether the user's answer was correct
+           *   - percentage: the percentage of correct answers
+           *   - date: the timestamp of the test, in ISO format
+           */
+/*******  40a00b16-f57b-4822-a3be-44c4a0c453d4  *******/
           saveResultsToCookies() {
             const resultData = {
               id: `test-${Date.now()}`,
@@ -224,14 +246,13 @@
               percentage: this.percentage,
               date: new Date().toISOString()
             };
+            console.log(resultData);
             let history = JSON.parse(this.getCookie('mathTestHistory') || '[]');
             history.unshift(resultData); // add to beginning
             if (history.length > 10) {
               history = history.slice(0, 10);
             }
             this.setCookie('mathTestHistory', JSON.stringify(history), 365);
-            // Log the updated cookie value as parsed JSON
-            console.log("Updated cookie history:", JSON.parse(this.getCookie('mathTestHistory') || '[]'));
           },
           setCookie(name, value, days) {
             const expires = new Date(Date.now() + days * 864e5).toUTCString();
@@ -247,11 +268,10 @@
           renderSubmissionHistory() {
             try {
               const raw = this.getCookie('mathTestHistory');
-              console.log("Raw cookie:", raw);
+            
               const history = JSON.parse(raw || '[]');
               history.sort((a, b) => new Date(b.date) - new Date(a.date));
               this.history = history;
-              console.log("Parsed history:", this.history);
             } catch (err) {
               console.error("Error parsing cookie:", err);
               this.history = [];
