@@ -234,6 +234,7 @@
           setCookie(name, value, days) {
             const expires = new Date(Date.now() + days * 864e5).toUTCString();
             document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
+            console.log("Set cookie", name, value, days);
           },
           getCookie(name) {
             return document.cookie.split('; ').reduce((r, v) => {
@@ -257,6 +258,7 @@
               this.percentage = item.percentage;
               this.feedbackVisible = true;
               this.showingHistoryIndex = index;
+              console.log("Showing history item", index);
             }
           },
           clearHistory() {
