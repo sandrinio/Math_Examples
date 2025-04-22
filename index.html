@@ -230,6 +230,8 @@
               history = history.slice(0, 10);
             }
             this.setCookie('mathTestHistory', JSON.stringify(history), 365);
+            // Log the updated cookie value as parsed JSON
+            console.log("Updated cookie history:", JSON.parse(this.getCookie('mathTestHistory') || '[]'));
           },
           setCookie(name, value, days) {
             const expires = new Date(Date.now() + days * 864e5).toUTCString();
