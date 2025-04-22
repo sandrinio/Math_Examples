@@ -74,7 +74,10 @@
           </div>
           <div class="col-md-4">
             <div id="history-container" class="bg-white border rounded p-3">
-              <h5 class="mb-3">History</h5>
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">History</h5>
+                <button class="btn btn-sm btn-outline-danger" @click="clearHistory" title="Clear History">C</button>
+              </div>
               <ul id="submission-history" class="list-group list-group-flush small">
                 <li v-for="(item, index) in history" :key="'history-'+index" @click="showHistoryItem(index)" class="list-group-item d-flex justify-content-between align-items-center" style="cursor:pointer;">
                   {{ new Date(item.date).toLocaleString() }}
@@ -214,14 +217,15 @@
           },
           saveResultsToCookies() {
             const resultData = {
+              id: `test-${Date.now()}`,
               results: this.results,
               percentage: this.percentage,
               date: new Date().toISOString()
             };
             let history = JSON.parse(this.getCookie('mathTestHistory') || '[]');
-            history.push(resultData);
-            if(history.length > 10) {
-              history = history.slice(history.length - 10);
+            history.unshift(resultData); // add to beginning
+            if (history.length > 10) {
+              history = history.slice(0, 10);
             }
             this.setCookie('mathTestHistory', JSON.stringify(history), 365);
           },
@@ -250,7 +254,12 @@
               this.feedbackVisible = true;
               this.showingHistoryIndex = index;
             }
-          }
+          },
+          clearHistory() {
+            this.setCookie('mathTestHistory', '', -1);
+            this.history = [];
+            this.feedbackVisible = false;
+          },
         },
         mounted() {
           this.generateProblems();
