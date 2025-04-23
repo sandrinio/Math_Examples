@@ -223,22 +223,23 @@
               percentage: this.percentage,
               date: new Date().toISOString()
             };
-    
+
             let history = JSON.parse(this.getCookie('mathTestHistory') || '[]');
             history.unshift(resultData); // Add to beginning
-    
+
             // Keep only the last 11 items
             if (history.length > 11) {
               history = history.slice(0, 11);
             }
-            this.setCookie('mathTestHistory', JSON.stringify(history)); // Remove expiration
+            this.setCookie('mathTestHistory', JSON.stringify(history), 30);
             console.log("History saved to cookie:", history);
           },
-          setCookie(name, value) { // Removed days parameter
+          setCookie(name, value, days = 30) {
+            const expires = new Date(Date.now() + days * 864e5).toUTCString();
             const domain = window.location.hostname;
             const secureFlag = window.location.protocol === 'https:' ? '; secure' : '';
-            document.cookie = `${name}=${encodeURIComponent(value)}; path=/; domain=${domain}${secureFlag}`;
-            console.log("Cookie set:", document.cookie);
+            document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; domain=${domain}${secureFlag}`;
+            console.log("Persistent cookie set:", document.cookie);
           },
           getCookie(name) {
             const nameEQ = name + "=";
