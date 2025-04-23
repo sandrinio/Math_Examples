@@ -236,7 +236,7 @@
               history = history.slice(0, 11);
             }
             this.setCookie('mathTestHistory', JSON.stringify(history)); // Remove expiration
-            console.log("History saved to cookie:", getCookie('mathTestHistory'));
+            
           },
           setCookie(name, value) { // Removed days parameter
             const domain = window.location.hostname;
