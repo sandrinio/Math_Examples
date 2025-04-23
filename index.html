@@ -216,6 +216,7 @@
             this.saveResultsToCookies();
             this.renderSubmissionHistory();
           },
+
           saveResultsToCookies() {
             const resultData = {
               id: `test-${Date.now()}`,
@@ -227,6 +228,7 @@
             };
     
             let history = JSON.parse(this.getCookie('mathTestHistory') || '[]');
+            console.log(history);
             history.unshift(resultData); // Add to beginning
     
             // Keep only the last 11 items
@@ -234,7 +236,7 @@
               history = history.slice(0, 11);
             }
             this.setCookie('mathTestHistory', JSON.stringify(history)); // Remove expiration
-            console.log("History saved to cookie:", history);
+            console.log("History saved to cookie:", getCookie('mathTestHistory'));
           },
           setCookie(name, value) { // Removed days parameter
             const domain = window.location.hostname;
@@ -301,14 +303,6 @@
             console.log("Cookie cleared:", document.cookie);
           },
         },
-/*************  ✨ Windsurf Command ⭐  *************/
-        /**
-         * Lifecycle hook.
-         *
-         * When component is mounted, we generate new problems and render
-         * the submission history.
-         */
-/*******  ac301b21-b931-4e8f-8f5d-fbcb143e2a09  *******/
         mounted() {
           this.generateProblems();
           this.renderSubmissionHistory();
