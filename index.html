@@ -258,6 +258,7 @@
             try {
               const raw = this.getCookie('mathTestHistory');
               const history = raw ? JSON.parse(raw) : [];
+              console.log("Parsed history:", history);
               history.sort((a, b) => new Date(b.date) - new Date(a.date));
               this.history = history.slice(0, 10).map(item => {
                 const date = new Date(item.date);
