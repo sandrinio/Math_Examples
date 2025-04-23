@@ -111,7 +111,7 @@
 
     <script>
       const { createApp, ref, onMounted } = Vue;
-
+    
       createApp({
         data() {
           return {
@@ -131,7 +131,6 @@
         },
         computed: {
           additionProblems() {
-            // Return problems filtered by addition, with globalIndex for answers binding
             return this.problems
               .map((p, i) => ({...p, globalIndex: i}))
               .filter(p => p.operator === '+');
@@ -225,31 +224,36 @@
               date: new Date().toISOString()
             };
             let history = JSON.parse(this.getCookie('mathTestHistory') || '[]');
-            history.unshift(resultData); // add to beginning
+            console.log("Existing history from cookie:", history);  // ADDED
+            history.unshift(resultData);
             if (history.length > 10) {
               history = history.slice(0, 10);
             }
             this.setCookie('mathTestHistory', JSON.stringify(history), 365);
-            console.log(this.getCookie('mathTestHistory'))
+            console.log("History saved to cookie:", history); // ADDED
           },
           setCookie(name, value, days) {
             const expires = new Date(Date.now() + days * 864e5).toUTCString();
             document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
-            console.log(document.cookie)
+            console.log("Cookie set:", document.cookie); //ADDED
           },
           getCookie(name) {
-            return document.cookie.split('; ').reduce((r, v) => {
+            const value = document.cookie.split('; ').reduce((r, v) => {
               const parts = v.split('=');
               return parts[0] === name ? decodeURIComponent(parts[1]) : r;
             }, '');
+            console.log("Cookie retrieved:", { name, value }); // ADDED
+            return value;
           },
           renderSubmissionHistory() {
             try {
               const raw = this.getCookie('mathTestHistory');
-              console.log(raw)
+              console.log("Raw cookie data:", raw); // ADDED
               const history = JSON.parse(raw || '[]');
+              console.log("Parsed history:", history);  // ADDED
               history.sort((a, b) => new Date(b.date) - new Date(a.date));
               this.history = history;
+              console.log("this.history:", this.history); // ADDED
             } catch (err) {
               console.error("Error parsing cookie:", err);
               this.history = [];
@@ -258,6 +262,7 @@
           showHistoryItem(index) {
             if(index >= 0 && index < this.history.length) {
               const item = this.history[index];
+              console.log("Showing history item:", item); // ADDED
               this.problems = JSON.parse(JSON.stringify(item.problems));
               this.answers = [...item.answers];
               this.results = item.results.map(r => ({ ...r }));
@@ -272,6 +277,7 @@
             this.setCookie('mathTestHistory', '', -1);
             this.history = [];
             this.feedbackVisible = false;
+            console.log("History cleared!"); // ADDED
           },
         },
         mounted() {
