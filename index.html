@@ -246,7 +246,7 @@
           renderSubmissionHistory() {
             try {
               const raw = this.getCookie('mathTestHistory');
-            
+              console.log(raw)
               const history = JSON.parse(raw || '[]');
               history.sort((a, b) => new Date(b.date) - new Date(a.date));
               this.history = history;
