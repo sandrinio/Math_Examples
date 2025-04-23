@@ -233,17 +233,24 @@
             console.log("History saved to cookie:", history); // ADDED
           },
           setCookie(name, value, days) {
-            const expires = new Date(Date.now() + days * 864e5).toUTCString();
-            document.cookie = name + '=' + encodeURIComponent(value) + '; expires=' + expires + '; path=/';
-            console.log("Cookie set:", document.cookie); //ADDED
-          },
+          const expires = new Date(Date.now() + days * 864e5).toUTCString();
+          const domain = window.location.hostname; // Get the domain
+          document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; domain=${domain}`;
+          console.log("Cookie set:", document.cookie);
+},
           getCookie(name) {
-            const value = document.cookie.split('; ').reduce((r, v) => {
-              const parts = v.split('=');
-              return parts[0] === name ? decodeURIComponent(parts[1]) : r;
-            }, '');
-            console.log("Cookie retrieved:", { name, value }); // ADDED
-            return value;
+              const nameEQ = name + "=";
+              const ca = document.cookie.split(';');
+              for(let i=0; i < ca.length; i++) {
+                  let c = ca[i];
+                  while (c.charAt(0)==' ') {
+                      c = c.substring(1,c.length);
+                  }
+                  if (c.indexOf(nameEQ) == 0) {
+                      return decodeURIComponent(c.substring(nameEQ.length,c.length));
+                  }
+              }
+              return null;
           },
           renderSubmissionHistory() {
             try {
