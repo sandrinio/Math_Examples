@@ -223,44 +223,56 @@
               percentage: this.percentage,
               date: new Date().toISOString()
             };
+    
             let history = JSON.parse(this.getCookie('mathTestHistory') || '[]');
-            console.log("Existing history from cookie:", history);  // ADDED
-            history.unshift(resultData);
-            if (history.length > 10) {
-              history = history.slice(0, 10);
+            history.unshift(resultData); // Add to beginning
+    
+            // Keep only the last 11 items
+            if (history.length > 11) {
+              history = history.slice(0, 11);
             }
-            this.setCookie('mathTestHistory', JSON.stringify(history), 365);
-            console.log("History saved to cookie:", history); // ADDED
+            this.setCookie('mathTestHistory', JSON.stringify(history)); // Remove expiration
+            console.log("History saved to cookie:", history);
           },
-          setCookie(name, value, days) {
-          const expires = new Date(Date.now() + days * 864e5).toUTCString();
-          const domain = window.location.hostname; // Get the domain
-          document.cookie = `${name}=${encodeURIComponent(value)}; expires=${expires}; path=/; domain=${domain}`;
-          console.log("Cookie set:", document.cookie);
-},
+          setCookie(name, value) { // Removed days parameter
+            const domain = window.location.hostname;
+            const secureFlag = window.location.protocol === 'https:' ? '; secure' : '';
+            document.cookie = `${name}=${encodeURIComponent(value)}; path=/; domain=${domain}${secureFlag}`;
+            console.log("Cookie set:", document.cookie);
+          },
           getCookie(name) {
-              const nameEQ = name + "=";
-              const ca = document.cookie.split(';');
-              for(let i=0; i < ca.length; i++) {
-                  let c = ca[i];
-                  while (c.charAt(0)==' ') {
-                      c = c.substring(1,c.length);
-                  }
-                  if (c.indexOf(nameEQ) == 0) {
-                      return decodeURIComponent(c.substring(nameEQ.length,c.length));
-                  }
-              }
-              return null;
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for(let i=0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0)==' ') {
+                    c = c.substring(1,c.length);
+                }
+                if (c.indexOf(nameEQ) == 0) {
+                    return decodeURIComponent(c.substring(nameEQ.length,c.length));
+                }
+            }
+            return null;
           },
           renderSubmissionHistory() {
             try {
               const raw = this.getCookie('mathTestHistory');
-              console.log("Raw cookie data:", raw); // ADDED
-              const history = JSON.parse(raw || '[]');
-              console.log("Parsed history:", history);  // ADDED
+              const history = raw ? JSON.parse(raw) : [];
               history.sort((a, b) => new Date(b.date) - new Date(a.date));
-              this.history = history;
-              console.log("this.history:", this.history); // ADDED
+              this.history = history.slice(0, 10).map(item => {
+                const date = new Date(item.date);
+                const day = date.getDate();
+                const month = date.toLocaleString('default', { month: 'short' });
+                const weekday = date.toLocaleString('default', { weekday: 'short' });
+                const hours = date.getHours();
+                const minutes = date.getMinutes();
+                const formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}`;
+                return {
+                  ...item,
+                  formattedDate: `${day} ${month}, ${weekday}, ${formattedTime}`,
+                };
+              });
+              console.log("this.history:", this.history);
             } catch (err) {
               console.error("Error parsing cookie:", err);
               this.history = [];
@@ -269,7 +281,7 @@
           showHistoryItem(index) {
             if(index >= 0 && index < this.history.length) {
               const item = this.history[index];
-              console.log("Showing history item:", item); // ADDED
+              console.log("Showing history item:", item);
               this.problems = JSON.parse(JSON.stringify(item.problems));
               this.answers = [...item.answers];
               this.results = item.results.map(r => ({ ...r }));
@@ -277,14 +289,13 @@
               this.percentage = item.percentage;
               this.feedbackVisible = true;
               this.showingHistoryIndex = index;
-            
             }
           },
           clearHistory() {
             this.setCookie('mathTestHistory', '', -1);
             this.history = [];
             this.feedbackVisible = false;
-            console.log("History cleared!"); // ADDED
+            console.log("History cleared!");
           },
         },
         mounted() {
